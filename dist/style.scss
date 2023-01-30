@@ -1,0 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Syne+Mono&display=swap");
+
+:root {
+  --color1: #411f2d;
+  --color2: #ac4147;
+  --color3: #f88863;
+  --color4: #ffc27f;
+  --color5: #ffe29a;
+}
+
+body {
+  min-width: 1000px;
+}
+
+.nav-top {
+  height: 65px;
+  background-color: var(--color3);
+  text-align: center;
+  font-family: "Pacifico", cursive;
+  font-family: "Syne Mono", monospace;
+  font-size: x-large;
+}
+
+.left-menu {
+  background-color: var(--color5);
+  width: 250px;
+  padding-left: 20px;
+  height: calc(100vh - 50px);
+}
+.row {
+  min-width: 1000px !important;
+}
+
+.add-new-project-btn {
+  cursor: pointer;
+  margin-top: 15px;
+  margin-bottom: 40px;
+}
+
+.container {
+}
+.project-item-div,
+.menu {
+  width: 25vh;
+}
+
+.menu .button {
+  border: none;
+  background-color: transparent;
+  display: flex;
+  padding: 10px 20px;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.menu .button:hover,
+.menu .button.active {
+  background-color: var(--color4);
+}
+
+p {
+  margin: 0;
+}
+
+.btn {
+  color: white;
+  background-color: #f88863;
+  border: none;
+}
+
+.btn:hover {
+  background-color: #ac4147;
+}
+
+#tasks-view {
+  gap: 5px;
+}
+.todo {
+  display: flex;
+  background-color: #eee;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 13px;
+  justify-content: center;
+  gap: 25px;
+  padding-top: 5px;
+}
+.todo:hover {
+  -webkit-transform: scale(1.003);
+  transform: scale(1.003);
+  -webkit-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+  -webkit-box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
+  -webkit-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+.task-controller {
+  display: flex;
+  gap: 5px;
+}
+
+.todo.completed {
+  text-decoration: line-through;
+}
