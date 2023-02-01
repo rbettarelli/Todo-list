@@ -4,7 +4,7 @@ import * as localStorage from "./localStorage.js";
 export const refreshPage = () => {
   domElement.projectList.innerText = "";
   domElement.tasksContainer.innerText = "";
-  taskByProject();
+
   addProjectTodoModal();
   showProjectList();
 };
@@ -16,20 +16,22 @@ export const addProjectTodoModal = (e) => {
     selecionProject.innerHTML = project.name;
     selecionProject.value = project.name;
     selecionProject.setAttribute("id", project.id);
-    domElement.taskproject.appendChild(selecionProject);
+    const selecionProjectClone = selecionProject.cloneNode(true);
+    domElement.editTaskproject.append(selecionProjectClone);
+    domElement.taskproject.append(selecionProject);
   });
 };
 
 export const modalDetails = (task) => {
   console.log("modal", task);
   domElement.detailsName.innerText = task.name;
-  domElement.detailDescription.innerText = `Description: ${task.descriprion}`;
+  domElement.detailDescription.innerText = `Description: ${task.description}`;
   domElement.detailDate.innerText = `Date: ${task.date}`;
   domElement.detailPriority.innerText = `Priority: ${task.priority}`;
   domElement.detailProject.innerText = `Project: ${getProjectName(task.project)}`;
 };
 
-function getProjectName(id) {
+export const getProjectName = (id) => {
   let projectName;
   for (let i = 0; i < localStorage.dbProject.length; i++) {
     if (localStorage.dbProject[i].id === id) {
@@ -38,24 +40,15 @@ function getProjectName(id) {
     }
   }
   return projectName;
-}
+};
 
-export const showTodo = (task, index) => {
+export const showTodo = (task) => {
   const taskDiv = document.createElement("div");
-
   taskDiv.classList.add("todo");
-  taskDiv.id = index;
+  taskDiv.setAttribute("id", task.id);
 
-  const complete = document.createElement("input");
-  complete.setAttribute("type", "checkbox");
-  complete.classList.add("todo-check-box");
-  complete.addEventListener("change", (event) => {
-    if (event.target.checked) {
-      taskDiv.classList.add("completed");
-    } else {
-      taskDiv.classList.remove("completed");
-    }
-  });
+  const checkboxDiv = document.createElement("div");
+  checkboxDiv.classList.add("todo-check-box");
 
   const taskTitle = document.createElement("p");
   taskTitle.classList.add("todo-task-title");
@@ -70,10 +63,11 @@ export const showTodo = (task, index) => {
 
   const taskDueDate = document.createElement("p");
   taskDueDate.classList.add("todo-task-due-date");
-  taskDueDate.innerText = task.date;
-
+  let data = new Date(task.date);
+  const dateFormat = `${data.getUTCDate().toString().padStart(2, "0")}-${(data.getUTCMonth() + 1).toString().padStart(2, "0")}-${data.getUTCFullYear()}`; // 1988-03-01
+  taskDueDate.innerText = dateFormat;
   const taskproject = document.createElement("p");
-  taskproject.innerText = getProjectName(task.project);
+  taskproject.innerText = getProjectName(task.project) === undefined ? "Inbox" : getProjectName(task.project);
 
   const taskControllerDiv = document.createElement("div");
   taskControllerDiv.classList.add("task-controller");
@@ -91,7 +85,7 @@ export const showTodo = (task, index) => {
   taskDeleteSpan.setAttribute("id", task.id);
 
   const taskPriority = document.createElement("span");
-  taskPriority.innerHTML = '<i class="bi bi-bell-fill"></i> ';
+  taskPriority.innerHTML = '<i class="bi bi-flag-fill"></i> ';
   taskPriority.classList.add("priority-icon");
   const priorityValue = task.priority;
 
@@ -101,30 +95,70 @@ export const showTodo = (task, index) => {
     taskPriority.style.color = "green";
   } else taskPriority.style.color = "yellow";
 
-  taskDiv.appendChild(complete);
+  const complete = document.createElement("input");
+  complete.classList.add("completed-checkbox");
+  complete.setAttribute("type", "checkbox");
+  complete.setAttribute("id", task.id);
+
+  if (task.completed) {
+    complete.checked = true;
+    taskDiv.classList.add("completed");
+  }
+
+  complete.addEventListener("change", (event) => {
+    if (event.target.checked) {
+      taskDiv.classList.add("completed");
+
+      task.completed = true;
+    } else {
+      taskDiv.classList.remove("completed");
+
+      task.completed = false;
+    }
+
+    localStorage.updateTaskCompleted(task.id, task.completed);
+  });
+
+  complete.addEventListener("change", () => {
+    localStorage.countCompletedTasks();
+  });
+
+  checkboxDiv.appendChild(complete);
+
+  taskDiv.appendChild(checkboxDiv);
   taskDiv.appendChild(taskTitle);
   taskDiv.appendChild(taskDetails);
   taskDiv.appendChild(taskDueDate);
   taskDiv.appendChild(taskproject);
+  taskDiv.appendChild(taskControllerDiv);
   taskControllerDiv.appendChild(taskEdit);
   taskControllerDiv.appendChild(taskDeleteSpan);
   taskControllerDiv.append(taskPriority);
-  taskDiv.appendChild(taskControllerDiv);
+
   domElement.tasksContainer.appendChild(taskDiv);
 };
 
+export const allTasks = () => {
+  domElement.tasksContainer.innerText = "";
+  let tasks = localStorage.dbTasks;
+
+  tasks.forEach((task) => {
+    showTodo(task);
+    console.log(task);
+  });
+};
+
 export const showProjectList = () => {
+  domElement.projectList.innerHTML = "";
   localStorage.dbProject.forEach((project, index) => {
     const projectItemDiv = document.createElement("button");
     const deleteIcon = document.createElement("span");
 
     projectItemDiv.classList.add("button", "d-flex", "justify-content-between", "project-item-div");
 
-    //project name
     projectItemDiv.innerText = project.name;
     projectItemDiv.setAttribute("id", project.id);
 
-    //trash icon
     deleteIcon.innerHTML = `<i class="bi bi-trash delete-project-icon" id=${index}></i>`;
 
     domElement.projectList.appendChild(projectItemDiv);
@@ -172,6 +206,16 @@ export const FilterTaskByID = (id) => {
   let matchingTasks = tasks.filter((task) => task.id === id);
   matchingTasks.forEach((task) => {
     modalDetails(task);
+    console.log(task);
+  });
+};
+
+export const completedTasks = () => {
+  domElement.tasksContainer.innerText = "";
+
+  let matchingTasks = localStorage.dbTasks.filter((task) => task.completed === true);
+  matchingTasks.forEach((task) => {
+    showTodo(task);
     console.log(task);
   });
 };

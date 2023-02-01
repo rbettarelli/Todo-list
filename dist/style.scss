@@ -1,80 +1,36 @@
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Syne+Mono&display=swap");
+// Variáveis para o sistema de grid
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 860px,
+  lg: 1000px,
+  xl: 1200px,
+);
 
-:root {
-  --color1: #411f2d;
-  --color2: #ac4147;
-  --color3: #f88863;
-  --color4: #ffc27f;
-  --color5: #ffe29a;
-}
+// Variáveis de cor
+$primary: #007bff;
+$secondary: #6c757d;
 
+// Estilos gerais
 body {
-  min-width: 1000px;
-}
-
-.nav-top {
-  height: 65px;
-  background-color: var(--color3);
-  text-align: center;
-  font-family: "Pacifico", cursive;
-  font-family: "Syne Mono", monospace;
-  font-size: x-large;
-}
-
-.left-menu {
-  background-color: var(--color5);
-  width: 250px;
-  padding-left: 20px;
-  height: calc(100vh - 50px);
-}
-.row {
-  min-width: 1000px !important;
-}
-
-.add-new-project-btn {
-  cursor: pointer;
-  margin-top: 15px;
-  margin-bottom: 40px;
-}
-
-.container {
-}
-.project-item-div,
-.menu {
-  width: 25vh;
-}
-
-.menu .button {
-  border: none;
-  background-color: transparent;
-  display: flex;
-  padding: 10px 20px;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.menu .button:hover,
-.menu .button.active {
-  background-color: var(--color4);
-}
-
-p {
+  font-family: Arial, sans-serif;
+  color: $secondary;
+  background-color: #f8f9fa;
   margin: 0;
+  padding: 0;
 }
 
-.btn {
-  color: white;
-  background-color: #f88863;
-  border: none;
+// Estilo da barra de navegação superior
+.nav-top {
+  height: 60px;
+  background-color: $primary;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
 }
 
-.btn:hover {
-  background-color: #ac4147;
-}
-
-#tasks-view {
-  gap: 5px;
-}
 .todo {
   display: flex;
   background-color: #eee;
@@ -84,6 +40,28 @@ p {
   justify-content: center;
   gap: 25px;
   padding-top: 5px;
+  padding: 5px;
+  min-width: 570px;
+  
+  .todo-task-title {
+    width: 80px;
+  }
+
+  .task-controller {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+    padding-right: 15px;
+  }
+
+  .todo-check-box{
+    padding-left: 10px;
+  }
+  .todo-task-due-date{
+    min-width: 83px;
+  }
+
+  
 }
 .todo:hover {
   -webkit-transform: scale(1.003);
@@ -91,16 +69,95 @@ p {
   -webkit-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
   -webkit-box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
-  box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
-  -webkit-transition: all 0.2s ease-out;
-  transition: all 0.2s ease-out;
 }
 
-.task-controller {
+// Estilo do menu esquerdo
+.left-menu {
+  background-color: #fff;
+  height: 85vh;
+  padding: 20px;
+
+  h4 {
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .menu {
+    button {
+      border: none;
+      background-color: transparent;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .menu .button:hover,
+    .menu .button.active {
+      background-color: $primary;
+      color: #fff;
+    }
+
+    .add-new-project-btn {
+      font-size: 1.2em;
+      cursor: pointer;
+      color: $primary;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+// Estilo da área de tarefas
+.task-conteiner {
+  padding: 30px;
+
+  h5 {
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  h4 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .todo {
+  }
+}
+
+footer {
   display: flex;
-  gap: 5px;
+  justify-content: center;
+  position: absolute;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 60px;
+  bottom: 0;
+  background-color: #333;
+  color: #fff;
+
+  p {
+    padding-top: 20px;
+  }
+  a {
+    text-decoration: none;
+  }
 }
 
-.todo.completed {
+.fa-github {
+  font-size: 24px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.fa-github:hover {
+  transform: rotate(360deg) scale(1.2);
+}
+
+.completed {
   text-decoration: line-through;
+  color: gray;
 }

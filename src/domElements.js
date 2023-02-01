@@ -44,3 +44,12 @@ export const detailDate = document.getElementById('detail-date')
 export const detailPriority = document.getElementById('detail-priority')
 export const detailProject = document.getElementById('detail-project')
 
+//button Completed
+ export const completeShowButton = document.getElementById('tasks-completed')
+
+//selections 
+export const editTaskProjectSelection = document.getElementById("edit-task-project");
+export const taskProjectSelection = document.getElementById("task-project");
+export const taskPrioritySelection = document.getElementById("task-priority");
+export const editTaskPrioritySelection = document.getElementById("edit-task-priority");
+

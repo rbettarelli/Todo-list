@@ -1,11 +1,14 @@
 import Project from "./projects";
 import Tasks from "./tasks";
 import * as view from "./views.js";
+import * as domElement from './domElements'
 
-export const dbProject = JSON.parse(localStorage.getItem("dbProject")) ?? [];
+export const dbProject = JSON.parse(localStorage.getItem("dbProject")) ?? []
 export const setDbProject = () => {
   localStorage.setItem("dbProject", JSON.stringify(dbProject));
 };
+
+
 
 export const dbTasks = JSON.parse(localStorage.getItem("dbTasks")) ?? [];
 export const setDbTasks = () => {
@@ -29,10 +32,10 @@ export const deleteProject = (index) => {
 //create task
 
 export const createTask = (name, description, date, priority, project) => {
-  const newTask = new Tasks(name, description, date, priority, project);
+  const newTask = new Tasks(name, description, date, priority, project, false);
   dbTasks.push(newTask);
   setDbTasks();
-  view.refreshPage;
+  view.refreshPage();
 };
 
 export const deletetask = (id) => {
@@ -60,3 +63,17 @@ export const editTask = (id, task) => {
   view.refreshPage;
 
 }
+
+export const updateTaskCompleted = (id, completed) => {
+  const task = dbTasks.find((task) => task.id === id);
+  task.completed = completed;
+  setDbTasks();
+  
+};
+
+
+export const countCompletedTasks = () => {
+  console.log('change')
+  const count = dbTasks.filter(task => task.completed === true).length;
+  domElement.completeShowButton.innerHTML =` Completed`
+};
