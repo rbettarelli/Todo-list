@@ -1,6 +1,6 @@
 # Todo List
 
-![Todo List Screenshot](todo-list.png)
+![Todo List Screenshot](to-do-list.png)
 
 This is a Todo List application developed using HTML, CSS, JavaScript, and Local Storage. The application is based on basic concepts for storing project-related tasks, updating, removing, and inserting items within the browser's Local Storage. It also utilizes looping structures to display the tasks.
 
