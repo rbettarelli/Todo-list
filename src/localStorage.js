@@ -1,79 +1,115 @@
-import Project from "./projects";
 import Tasks from "./tasks";
 import * as view from "./views.js";
-import * as domElement from './domElements'
+import * as domElement from "./domElements";
+import axios from "axios";
 
-export const dbProject = JSON.parse(localStorage.getItem("dbProject")) ?? []
-export const setDbProject = () => {
-  localStorage.setItem("dbProject", JSON.stringify(dbProject));
+const BASE_URL = "https://todolist-api-production-3283.up.railway.app";
+
+export const dbProject = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/project`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao retornar os projetos");
+  }
 };
 
-
-
-export const dbTasks = JSON.parse(localStorage.getItem("dbTasks")) ?? [];
-export const setDbTasks = () => {
-  localStorage.setItem("dbTasks", JSON.stringify(dbTasks));
+export const dbTasks = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/todo`);
+    return response.data;
+  } catch (error) {
+    console.error("erro ao recuperar as todo");
+  }
 };
 
 //create project
-export const createProject = (name) => {
-  const newProject = new Project(name);
-  dbProject.push(newProject);
-  setDbProject();
+export const createProject = async (name) => {
+  await axios.post(`${BASE_URL}/project`, { name });
   view.refreshPage();
 };
 //delete project
-export const deleteProject = (index) => {
-  dbProject.splice(index, 1);
-  setDbProject();
+export const deleteProject = async (id) => {
+  try {
+    await axios.delete(`${BASE_URL}/project/${id}`);
+  } catch (error) {
+    console.error("Nao foi possivel deletar o projeto");
+  }
+
   view.refreshPage();
 };
 
 //create task
 
-export const createTask = (name, description, date, priority, project) => {
-  const newTask = new Tasks(name, description, date, priority, project, false);
-  dbTasks.push(newTask);
-  setDbTasks();
+export const createTask = async (
+  title,
+  description,
+  formattedDueDate,
+  priority,
+  project
+) => {
+  try {
+    await axios.post(`${BASE_URL}/todo`, {
+      title,
+      description,
+      formattedDueDate,
+      priority,
+      project,
+    });
+    view.refreshPage();
+  } catch (error) {
+    console.error("Erro ao adicionar a tarefa");
+  }
+};
+
+export const deletetask = async (id) => {
+  try {
+    await axios.delete(`${BASE_URL}/todo/${id}`);
+  } catch (error) {
+    console.log("delete toto error", error);
+  }
+
   view.refreshPage();
 };
 
-export const deletetask = (id) => {
-  const index = dbTasks.findIndex((task) => task.id === id);
-  if (index === -1) {
-    // handle case where task with given id is not found
-    return;
+export const editTask = async (task) => {
+  try {
+    await axios.put(`${BASE_URL}/todo/${task.id}`, task);
+    view.refreshPage()
+  } catch (error) {
+    // Lide com erros de requisição aqui.
+    console.error("Erro ao atualizar a tarefa:", error);
   }
-  dbTasks.splice(index, 1);
-
-  setDbTasks();
-  view.refreshPage;
-};
-
-export const editTask = (id, task) => {
-
-  const index = dbTasks.findIndex((task) => task.id === id);
-  if (index === -1) {
-    // handle case where task with given id is not found
-    return;
-  }
-  dbTasks[index] = task
-
-  setDbTasks();
-  view.refreshPage;
-
-}
-
-export const updateTaskCompleted = (id, completed) => {
-  const task = dbTasks.find((task) => task.id === id);
-  task.completed = completed;
-  setDbTasks();
   
+  
+ 
 };
 
+export const updateTaskCompleted = async (id, completed) => {
+  try {
+    const data = { completed: completed };
+    await axios.put(`${BASE_URL}/todo/${id}/completed`, data);
+    countCompletedTasks();
+    
+  } catch (error) {
+    console.error("erro ao atualizar a tarefa", error);
+  }
+};
 
-export const countCompletedTasks = () => {
-  console.log('change')
-  const count = dbTasks.filter(task => task.completed === true).length;
-  domElement.completeShowButton.innerHTML =` Completed`
+export const countCompletedTasks = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/todo`);
+    const tasks = response.data;
+
+    const count = tasks.filter((task) => task.completed === true).length;
+    console.log(count);
+
+    domElement.completeShowButton.innerHTML = `Completed: ${count}`;
+  } catch (error) {
+    console.error(
+      "Erro ao obter tarefas ou contar tarefas completadas:",
+      error
+    );
+  }
 };
