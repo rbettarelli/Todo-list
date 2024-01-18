@@ -3,7 +3,7 @@ import * as view from "./views.js";
 import * as domElement from "./domElements";
 import axios from "axios";
 
-const BASE_URL = "https://todolist-api-production-3283.up.railway.app";
+const BASE_URL = "https://ec2-54-145-142-163.compute-1.amazonaws.com";
 
 export const dbProject = async () => {
   try {
