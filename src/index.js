@@ -2,7 +2,6 @@ import * as domElement from "./domElements.js";
 import * as localStorage from "./localStorage.js";
 import * as views from "./views.js";
 
-
 let selectedOptionId;
 let editIdTask;
 let selectedOptionValue = "low";
@@ -28,10 +27,16 @@ domElement.editTaskProjectSelection.addEventListener("change", function () {
   selectedOptionId = handleSelectChangeProject.call(this);
 });
 
-domElement.editTaskPrioritySelection.addEventListener("change", handleSelectChangePrioriry);
-domElement.taskPrioritySelection.addEventListener("change", handleSelectChangePrioriry);
+domElement.editTaskPrioritySelection.addEventListener(
+  "change",
+  handleSelectChangePrioriry
+);
+domElement.taskPrioritySelection.addEventListener(
+  "change",
+  handleSelectChangePrioriry
+);
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
   views.changeActive(e.target);
 
   if (e.target.classList.contains("delete-project-icon")) {
@@ -77,17 +82,19 @@ document.addEventListener("click", (e) => {
     const id = e.target.id;
     editIdTask = e.target.id;
 
-    let array = localStorage.dbTasks;
+    let array = await localStorage.dbTasks();
 
     for (let i = 0; i < array.length; i++) {
-      if (array[i].id === id) {
+      if (array[i].id == id) {
         let task = array[i];
 
-        domElement.edittaskName.value = task.name;
+        domElement.edittaskName.value = task.title;
         domElement.editTaskDescription.value = task.description;
-        domElement.editTaskDate.value = task.date;
-         domElement.editTaskPriority.value = task.priority;
-        const selectedProject = Array.from(domElement.editTaskproject.options).find((option) => option.id === task.project);
+        domElement.editTaskDate.value = task.formattedDueDate;
+        domElement.editTaskPriority.value = task.priority;
+        const selectedProject = Array.from(
+          domElement.editTaskproject.options
+        ).find((option) => option.id == task.project);
         selectedProject.selected = true;
         domElement.editTaskproject.value = selectedProject.value;
 
@@ -103,7 +110,13 @@ domElement.addProjectForm.addEventListener("submit", () => {
 });
 
 domElement.addTaskForm.addEventListener("submit", () => {
-  localStorage.createTask(domElement.taskName.value, domElement.taskDescription.value, domElement.taskDate.value, selectedOptionValue, selectedOptionId);
+  localStorage.createTask(
+    domElement.taskName.value,
+    domElement.taskDescription.value,
+    domElement.taskDate.value,
+    selectedOptionValue,
+    selectedOptionId
+  );
 
   domElement.addTaskForm.reset();
   views.taskByProject(selectedOptionId);
@@ -111,18 +124,17 @@ domElement.addTaskForm.addEventListener("submit", () => {
 
 domElement.edittaskForm.addEventListener("submit", () => {
   const id = editIdTask;
+  console.log(editIdTask, "edit id task", id);
   const task = {
     id: editIdTask,
-    name: domElement.edittaskName.value,
+    title: domElement.edittaskName.value,
     description: domElement.editTaskDescription.value,
-    date: domElement.editTaskDate.value,
+    formattedDueDate: domElement.editTaskDate.value,
     priority: domElement.editTaskPriority.value,
     project: selectedOptionId,
   };
 
-  console.log(selectedOptionId);
-  localStorage.editTask(id, task);
-  console.log(task);
+  localStorage.editTask(task);
   domElement.edittaskForm.reset();
 
   if (domElement.projectNameLabel.innerText == "Inbox") {

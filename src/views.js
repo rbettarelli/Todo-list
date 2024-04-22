@@ -4,13 +4,16 @@ import * as localStorage from "./localStorage.js";
 export const refreshPage = () => {
   domElement.projectList.innerText = "";
   domElement.tasksContainer.innerText = "";
-
+  allTasks()
   addProjectTodoModal();
   showProjectList();
 };
 
-export const addProjectTodoModal = (e) => {
-  localStorage.dbProject.forEach((project) => {
+export const addProjectTodoModal =  async () => {
+
+  let projects =  await localStorage.dbProject()
+
+    projects.forEach((project) => {
     const selecionProject = document.createElement("option");
     selecionProject.classList.add("project-object");
     selecionProject.innerHTML = project.name;
@@ -22,27 +25,33 @@ export const addProjectTodoModal = (e) => {
   });
 };
 
-export const modalDetails = (task) => {
-  console.log("modal", task);
+export const modalDetails =  async(task) => {
+
   domElement.detailsName.innerText = task.name;
   domElement.detailDescription.innerText = `Description: ${task.description}`;
-  domElement.detailDate.innerText = `Date: ${task.date}`;
+  domElement.detailDate.innerText = `Date: ${task.formattedDueDate}`;
   domElement.detailPriority.innerText = `Priority: ${task.priority}`;
-  domElement.detailProject.innerText = `Project: ${getProjectName(task.project)}`;
+  domElement.detailProject.innerText = `Project:  ${ await getProjectName(
+    task.project
+  )}`;
 };
 
-export const getProjectName = (id) => {
+export const getProjectName = async (id) => {
+  
   let projectName;
-  for (let i = 0; i < localStorage.dbProject.length; i++) {
-    if (localStorage.dbProject[i].id === id) {
-      projectName = localStorage.dbProject[i].name;
+  let project = await localStorage.dbProject()
+ 
+  for (let i = 0; i <  project.length; i++) {
+    if (project[i].id === id) {
+      projectName = project[i].name;
       break;
     }
   }
+
   return projectName;
 };
 
-export const showTodo = (task) => {
+export const showTodo = async (task) => {
   const taskDiv = document.createElement("div");
   taskDiv.classList.add("todo");
   taskDiv.setAttribute("id", task.id);
@@ -52,7 +61,7 @@ export const showTodo = (task) => {
 
   const taskTitle = document.createElement("p");
   taskTitle.classList.add("todo-task-title");
-  taskTitle.innerText = task.name;
+  taskTitle.innerText = task.title;
 
   const taskDetails = document.createElement("button");
   taskDetails.classList.add("todo-task-detail-button", "btn", "btn-secondary");
@@ -63,24 +72,31 @@ export const showTodo = (task) => {
 
   const taskDueDate = document.createElement("p");
   taskDueDate.classList.add("todo-task-due-date");
-  let data = new Date(task.date);
-  const dateFormat = `${data.getUTCDate().toString().padStart(2, "0")}-${(data.getUTCMonth() + 1).toString().padStart(2, "0")}-${data.getUTCFullYear()}`; // 1988-03-01
+  let data = new Date(task.formattedDueDate);
+  const dateFormat = `${data.getUTCDate().toString().padStart(2, "0")}-${(
+    data.getUTCMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}-${data.getUTCFullYear()}`; // 1988-03-01
   taskDueDate.innerText = dateFormat;
   const taskproject = document.createElement("p");
-  taskproject.innerText = getProjectName(task.project) === undefined ? "Inbox" : getProjectName(task.project);
+  taskproject.innerText =
+    await getProjectName(task.project) === undefined
+      ? "Inbox"
+      : await getProjectName(task.project);
 
   const taskControllerDiv = document.createElement("div");
   taskControllerDiv.classList.add("task-controller");
 
   const taskEdit = document.createElement("img");
-  taskEdit.src = "../dist/img/edit.svg";
+  taskEdit.src = "./img/edit.svg";
   taskEdit.classList.add("task-edit");
   taskEdit.setAttribute("id", task.id);
   taskEdit.setAttribute("data-bs-toggle", "modal");
   taskEdit.setAttribute("data-bs-target", "#edit-task-modal");
 
   const taskDeleteSpan = document.createElement("img");
-  taskDeleteSpan.src = "../dist/img/delete.svg";
+  taskDeleteSpan.src = "./img/delete.svg";
   taskDeleteSpan.classList.add("delete-icon");
   taskDeleteSpan.setAttribute("id", task.id);
 
@@ -138,23 +154,30 @@ export const showTodo = (task) => {
   domElement.tasksContainer.appendChild(taskDiv);
 };
 
-export const allTasks = () => {
-  domElement.tasksContainer.innerText = "";
-  let tasks = localStorage.dbTasks;
+export const allTasks = async() => {
 
-  tasks.forEach((task) => {
+  let tasks =  await localStorage.dbTasks();
+  domElement.tasksContainer.innerHTML = "";
+
+   tasks.forEach((task) => {
     showTodo(task);
-    console.log(task);
+  
   });
 };
 
-export const showProjectList = () => {
+export const showProjectList =  async() => {
   domElement.projectList.innerHTML = "";
-  localStorage.dbProject.forEach((project, index) => {
+   let project = await localStorage.dbProject() 
+   project.forEach((project, index) => {
     const projectItemDiv = document.createElement("button");
     const deleteIcon = document.createElement("span");
 
-    projectItemDiv.classList.add("button", "d-flex", "justify-content-between", "project-item-div");
+    projectItemDiv.classList.add(
+      "button",
+      "d-flex",
+      "justify-content-between",
+      "project-item-div"
+    );
 
     projectItemDiv.innerText = project.name;
     projectItemDiv.setAttribute("id", project.id);
@@ -175,22 +198,22 @@ export const changeActive = (id) => {
   if (id) id.classList.add("active");
 };
 
-export const taskByProject = (id) => {
+export const taskByProject = async(id) => {
   domElement.tasksContainer.innerText = "";
 
   let selectedProject = id;
 
-  let tasks = localStorage.dbTasks;
+  let tasks = await localStorage.dbTasks();
 
   let matchingTasks = tasks.filter((task) => task.project === selectedProject);
 
   matchingTasks.forEach((task) => showTodo(task));
 };
 
-export const filterTasksByDate = (date) => {
+export const filterTasksByDate = async(date) => {
   domElement.tasksContainer.innerText = "";
   let todayDate = date;
-  let tasks = localStorage.dbTasks;
+  let tasks = await localStorage.dbTasks();
 
   let matchingTasks = tasks.filter((task) => task.date === todayDate);
   matchingTasks.forEach((task) => {
@@ -198,24 +221,26 @@ export const filterTasksByDate = (date) => {
   });
 };
 
-export const FilterTaskByID = (id) => {
-  domElement.tasksContainer.innerText = "";
+export const FilterTaskByID = async(id) => {
+ 
 
-  let tasks = localStorage.dbTasks;
+  let tasks = await localStorage.dbTasks();
 
-  let matchingTasks = tasks.filter((task) => task.id === id);
+  let matchingTasks = tasks.filter((task) => task.id == id);
   matchingTasks.forEach((task) => {
     modalDetails(task);
-    console.log(task);
+ 
   });
 };
 
-export const completedTasks = () => {
+export const completedTasks = async() => {
   domElement.tasksContainer.innerText = "";
 
-  let matchingTasks = localStorage.dbTasks.filter((task) => task.completed === true);
+  let matchingTasks = await localStorage.dbTasks.filter(
+    (task) => task.completed === true
+  );
   matchingTasks.forEach((task) => {
     showTodo(task);
-    console.log(task);
+   
   });
 };

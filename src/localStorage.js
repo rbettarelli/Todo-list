@@ -3,12 +3,20 @@ import * as view from "./views.js";
 import * as domElement from "./domElements";
 import axios from "axios";
 
-const BASE_URL = "https://ec2-54-145-142-163.compute-1.amazonaws.com";
+
+
+
+const BASE_URL = "https://165e-2804-14c-b4-84b3-e2ab-709b-fc3f-f1d1.ngrok-free.app";
+
 
 export const dbProject = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/project`);
-    console.log(response.data);
+    const response = await axios.get(`${BASE_URL}/project`, {headers: {
+      "ngrok-skip-browser-warning": "any" // Adicionando o cabeçalho necessário
+    }});
+    
+
+  
     return response.data;
   } catch (error) {
     console.error("Erro ao retornar os projetos");
@@ -17,8 +25,14 @@ export const dbProject = async () => {
 
 export const dbTasks = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/todo`);
-    return response.data;
+    const response = await axios.get(`${BASE_URL}/todo`, {headers: {
+      "ngrok-skip-browser-warning": "any" // Adicionando o cabeçalho necessário
+    }});
+    
+    const tasks = Array.isArray(response.data) ? response.data : [response.data];
+    
+
+    return tasks;
   } catch (error) {
     console.error("erro ao recuperar as todo");
   }
@@ -74,15 +88,16 @@ export const deletetask = async (id) => {
 };
 
 export const editTask = async (task) => {
+  console.log('put', task)
   try {
     await axios.put(`${BASE_URL}/todo/${task.id}`, task);
-    view.refreshPage()
+    
   } catch (error) {
     // Lide com erros de requisição aqui.
     console.error("Erro ao atualizar a tarefa:", error);
   }
   
-  
+  view.refreshPage()
  
 };
 
